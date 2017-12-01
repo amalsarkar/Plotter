@@ -11,10 +11,10 @@ import logging; logging.basicConfig(level=logging.DEBUG)
 from rootpy import log
 from rootpy import asrootpy
 from rounding import rounding
-import re,sys
+import re
 from configobj import ConfigObj
 
-
+log.basic_config_colorized()
 class NoDictMessagesFilter(logging.Filter):
     def filter(self, record):
         #return "is not an exact divider of nbins=" not in record.msg
@@ -237,8 +237,6 @@ def getRGBTColor(color):
             color=getattr(ROOT,tcolor)-int(modif)
         else:
             color=getattr(ROOT,color)
-    if color>=100:
-        return (0,0,0)
     col=ROOT.gROOT.GetColor(color)
     return (col.GetRed(),col.GetGreen(),col.GetBlue())
 
@@ -554,17 +552,13 @@ class HistStorage(object):
                 return ""
         t=""
         # this should cover all the usual cases, like [unit] /unit or *eV.
-        prossibleUnits=['\SeV','[\[\(]\S*[\]\)]','/\S*\}']
+        prossibleUnits=['[\[\(]\S*[\]\)]','/\S*\}','\SeV']
         for unit in prossibleUnits:
-            m = re.findall(unit, xtitle)
-            if m != None or len(m)>0:
+            m = re.search(unit, xtitle)
+            if m != None:
                 break
-        if m != None and len(m)>0:
-            if sys.version_info[0]>=3:
-                table = str.maketrans("", "", "[\[\(\]\)]/\}")
-                t=m[-1].translate(table)
-            else:
-                t=m[-1].translate(None, "[\[\(\]\)]/\}")
+        if m != None:
+            t=m.group(0).translate(None,"[\[\(\]\)]/\}")
         self.Unit=t
         return t
 
@@ -692,7 +686,7 @@ class HistStorage(object):
                 try:
                     self.files[file]=File(self.basepath+"/"+file+".root", "read")
                 except:
-                    yesno=eval(input("file %s is not there continue? [y/n]"%(file)))
+                    yesno=input("file %s is not there continue? [y/n]"%(file))
                     if yesno!="y":
                         import sys
                         sys.exit(1)
@@ -790,7 +784,7 @@ class HistStorage(object):
                 else:
                     log_plotlib.warning( "No %s in %s (error:%s)"%(hist,f,e))
                     if len(self.hists)>0:
-                        self.hists[f]=list(self.hists.values())[0].clone()
+                        self.hists[f]=self.hists.values()[0].clone()
                         self.hists[f].Reset()
                     else:
                         self.hists[f]=Hist(100,0,100)
@@ -1006,17 +1000,13 @@ class HistStorage(object):
     # sets the axis labels and titles
     def setStyle(self):
         for key in self.hists:
-            #try:
+            try:
                 if self.matplotlibStyle:
                     if "$" not in self.hists[key].xaxis.GetTitle():
                         self.hists[key].xaxis.SetTitle("$\\mathrm{"+self.hists[key].xaxis.GetTitle().replace("#","\\")+"}$")
                         #self.hists[key].xaxis.SetTitle("${"+self.hists[key].xaxis.GetTitle().replace("#","\\")+"}$")
                 if self.isCumulative and ">" not in self.eventString:
-                    if sys.version_info[0]>=3:
-                        table = str.maketrans("", "", self._getUnit()+"[]/()")
-                        self.eventString+=">%s"%(self.hists[key].xaxis.GetTitle().translate(table))
-                    else:
-                        self.eventString+=">%s"%(self.hists[key].xaxis.GetTitle().translate(None,self._getUnit()+"[]/()"))
+                    self.eventString+=">%s"%(self.hists[key].xaxis.GetTitle().translate(None,self._getUnit()+"[]/()"))
                 if self.forcedWidth is not False:
                     width=self.forcedWidth
                 else:
@@ -1026,8 +1016,8 @@ class HistStorage(object):
                     self.hists[key].SetTitle("Data")
                 else:
                     self.hists[key].SetTitle(key)
-            #except:
-                #log_plotlib.warning("Could not change the axis title")
+            except:
+                log_plotlib.warning("Could not change the axis title")
 
     ## Function to init the style of the histograms
     #
@@ -1064,3 +1054,5 @@ class HistStorage(object):
                 if isinstance(self.colorList, dict):
                     if key in self.colorList:
                         self.applyStyle(key,fillcolor = self.colorList[key],linecolor = self.colorList[key])
+
+
