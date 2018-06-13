@@ -60,7 +60,7 @@ void Plotter::CreateStack( TDirectory *target, Logfile& logfile) {
   Bool_t status = TH1::AddDirectoryStatus();
   TH1::AddDirectory(kFALSE);
 
-
+  std::cout << path << std::endl;
   //// Loop to write cutflow to logfile
   TH1* events;
   current_sourcedir->GetObject("Events", events);

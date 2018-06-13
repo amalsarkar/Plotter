@@ -8,6 +8,8 @@ echo ---------------- Running Plotter ------ ---------------------
 #./Plotter  config/Stau_2018_Met_WJets_SF_Tau.config
 ###########################
 #./Plotter  config/Stau_2018_RealWJets_SF_Met.config
-./Plotter  config/Stau_2018_EmuWJets_SF_Met.config
+#./Plotter  config/Stau_2018_EmuWJets_SF_Met.config
 #./Plotter  config/Stau_2018_Met_WJets_SF_Met.config
 ##########################
+####QCD estimation
+./Plotter config/QCD.config
