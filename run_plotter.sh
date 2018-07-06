@@ -12,4 +12,5 @@ echo ---------------- Running Plotter ------ ---------------------
 #./Plotter  config/Stau_2018_Met_WJets_SF_Met.config
 ##########################
 ####QCD estimation
-./Plotter config/QCD.config
+./Plotter config/QCD.config -onlytop
+#./Plotter config/DY.config
