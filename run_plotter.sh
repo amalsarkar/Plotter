@@ -13,5 +13,5 @@ echo ---------------- Running Plotter ------ ---------------------
 ##########################
 ####QCD estimation
 ./Plotter config/QCD.config 
-./Plotter config/SR.config -onlytop
+#./Plotter config/SR.config -onlytop
 #./Plotter config/DY.config
